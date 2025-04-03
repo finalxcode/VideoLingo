@@ -6,11 +6,12 @@ import subprocess
 
 from core.config_utils import load_key
 from core.all_whisper_methods.demucs_vl import demucs_main, RAW_AUDIO_FILE, VOCAL_AUDIO_FILE
-from core.all_whisper_methods.audio_preprocess import process_transcription, convert_video_to_audio, split_audio, save_results, compress_audio, CLEANED_CHUNKS_EXCEL_PATH
+from core.all_whisper_methods.audio_preprocess import process_transcription, convert_video_to_audio, split_audio, save_results, save_json_results, compress_audio, CLEANED_CHUNKS_EXCEL_PATH
 from core.step1_ytdlp import find_video_files
 
 WHISPER_FILE = "output/audio/for_whisper.mp3"
 ENHANCED_VOCAL_PATH = "output/audio/enhanced_vocals.mp3"
+CLEANED_CHUNKS_JSON_PATH = "output/log/cleaned_chunks.json"
 
 def enhance_vocals(vocals_ratio=2.50):
     """Enhance vocals audio volume"""
@@ -71,7 +72,8 @@ def transcribe():
     
     # step6 Process df
     df = process_transcription(combined_result)
-    save_results(df)
+    # save_results(df)
+    save_json_results(df, CLEANED_CHUNKS_JSON_PATH)
         
 if __name__ == "__main__":
     transcribe()

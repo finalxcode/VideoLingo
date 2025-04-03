@@ -4,10 +4,12 @@ from typing import Dict, List, Tuple
 from rich import print
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.config_utils import update_key
+import json
 
 AUDIO_DIR = "output/audio"
 RAW_AUDIO_FILE = "output/audio/raw.mp3"
 CLEANED_CHUNKS_EXCEL_PATH = "output/log/cleaned_chunks.xlsx"
+
 
 def compress_audio(input_file: str, output_file: str):
     """将输入音频文件压缩为低质量音频文件，用于转录"""
@@ -23,6 +25,7 @@ def compress_audio(input_file: str, output_file: str):
     return output_file
 
 def convert_video_to_audio(video_file: str):
+    """这一步主要是把视频转成128KB的mp3格式"""
     os.makedirs(AUDIO_DIR, exist_ok=True)
     if not os.path.exists(RAW_AUDIO_FILE):
         print(f"🎬➡️🎵 Converting to high quality audio with FFmpeg ......")
@@ -94,7 +97,7 @@ def split_audio(audio_file: str, target_len: int = 30*60, win: int = 60) -> List
     print(f"🔪 Audio split into {len(segments)} segments")
     return segments
 
-def process_transcription(result: Dict) -> pd.DataFrame:
+def process_transcription(result: Dict) -> str:
     all_words = []
     for segment in result['segments']:
         for word in segment['words']:
@@ -137,7 +140,8 @@ def process_transcription(result: Dict) -> pd.DataFrame:
                 
                 all_words.append(word_dict)
     
-    return pd.DataFrame(all_words)
+    # p = pd.DataFrame(all_words)
+    return json.dumps(all_words, ensure_ascii=False, indent=4)
 
 def save_results(df: pd.DataFrame):
     os.makedirs('output/log', exist_ok=True)
@@ -158,6 +162,25 @@ def save_results(df: pd.DataFrame):
     df['text'] = df['text'].apply(lambda x: f'"{x}"')
     df.to_excel(CLEANED_CHUNKS_EXCEL_PATH, index=False)
     print(f"📊 Excel file saved to {CLEANED_CHUNKS_EXCEL_PATH}")
+
+
+def save_json_results(json_str: str, file_path: str):
+    # 确保输出目录存在
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    # 将 JSON 字符串解析为 Python 对象
+    try:
+        data = json.loads(json_str)
+    except json.JSONDecodeError as e:
+        print(f"❌ Error parsing JSON: {e}")
+        return
+
+    # 保存 JSON 数据到文件
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+    print(f"📊 JSON file saved to {file_path}")
+
 
 def save_language(language: str):
     update_key("whisper.detected_language", language)

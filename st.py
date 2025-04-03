@@ -45,22 +45,22 @@ def text_processing_section():
 def process_text():
     with st.spinner(t("Using Whisper for transcription...")):
         step2_whisperX.transcribe()
-    with st.spinner(t("Splitting long sentences...")):  
-        step3_1_spacy_split.split_by_spacy()
-        step3_2_splitbymeaning.split_sentences_by_meaning()
-    with st.spinner(t("Summarizing and translating...")):
-        step4_1_summarize.get_summary()
-        if load_key("pause_before_translate"):
-            input(t("⚠️ PAUSE_BEFORE_TRANSLATE. Go to `output/log/terminology.json` to edit terminology. Then press ENTER to continue..."))
-        step4_2_translate_all.translate_all()
-    with st.spinner(t("Processing and aligning subtitles...")): 
-        step5_splitforsub.split_for_sub_main()
-        step6_generate_final_timeline.align_timestamp_main()
-    with st.spinner(t("Merging subtitles to video...")):
-        step7_merge_sub_to_vid.merge_subtitles_to_video()
+    # with st.spinner(t("Splitting long sentences...")):
+    #     step3_1_spacy_split.split_by_spacy()
+    #     step3_2_splitbymeaning.split_sentences_by_meaning()
+    # with st.spinner(t("Summarizing and translating...")):
+    #     step4_1_summarize.get_summary()
+    #     if load_key("pause_before_translate"):
+    #         input(t("⚠️ PAUSE_BEFORE_TRANSLATE. Go to `output/log/terminology.json` to edit terminology. Then press ENTER to continue..."))
+    #     step4_2_translate_all.translate_all()
+    # with st.spinner(t("Processing and aligning subtitles...")):
+    #     step5_splitforsub.split_for_sub_main()
+    #     step6_generate_final_timeline.align_timestamp_main()
+    # with st.spinner(t("Merging subtitles to video...")):
+    #     step7_merge_sub_to_vid.merge_subtitles_to_video()
     
     st.success(t("Subtitle processing complete! 🎉"))
-    st.balloons()
+    # st.balloons()
 
 def audio_processing_section():
     st.header(t("c. Dubbing"))
@@ -118,7 +118,7 @@ def main():
         st.markdown(give_star_button, unsafe_allow_html=True)
     download_video_section()
     text_processing_section()
-    audio_processing_section()
+    # audio_processing_section()
 
 if __name__ == "__main__":
     main()
